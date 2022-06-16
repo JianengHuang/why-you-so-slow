@@ -3,3 +3,8 @@ This project was created in order to race reaction time with people around you. 
 Tecnologies used: 
 
 React
+
+//To-Do
+
+-Stop stopwatch with key
+-set a random time to change the color to green
