@@ -2,5 +2,4 @@ This project was created in order to race reaction time with people around you. 
 
 Tecnologies used:
 
-React
-TypeScript
+ReactJS - TypeScript
