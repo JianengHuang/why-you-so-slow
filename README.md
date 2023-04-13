@@ -3,3 +3,9 @@ This project was created in order to race reaction time with people around you. 
 Tecnologies used:
 
 ReactJS - TypeScript
+
+Todo:
+
+Change colors individually
+Create a Grid that can adopt all playerboxes
+Create a ready system

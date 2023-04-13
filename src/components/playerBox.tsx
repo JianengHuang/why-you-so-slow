@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 
 interface gameInterface {
   index: number;
-  color: string;
+  colors: string[];
   startTime: number;
   players: Array<boolean>;
   gameStarted: boolean;
-  setColor: (newColor: string) => void;
+  setColors: (newColor: string[]) => void;
   setPlayers: (newPlayers: Array<boolean>) => void;
   setGameStarted: (newGameStarted: boolean) => void;
 }
@@ -38,7 +38,7 @@ const PlayerBox = (props: gameInterface) => {
   };
 
   const endGame = () => {
-    props.setColor('lightblue');
+    setColorBlue();
     const date = new Date();
     setEndTime(date.getTime() - props.startTime);
     const newPlayers = props.players;
@@ -47,14 +47,21 @@ const PlayerBox = (props: gameInterface) => {
     reloadGameState();
   };
 
+  const setColorBlue = () => {
+    let newColors = props.colors;
+    newColors[props.index] = 'lightblue';
+    props.setColors(newColors);
+  };
+
   const reloadGameState = () => {
     if (!props.players.includes(true)) {
       props.setGameStarted(false);
     }
+    // console.log(props.players);
   };
 
   return (
-    <ColoredBox color={props.color}>
+    <ColoredBox color={props.colors[props.index]}>
       <h2>Your Key: {key}</h2>
       <h1>{endTime}</h1>
       <button onClick={() => setShow(!show)}>Select Key</button>

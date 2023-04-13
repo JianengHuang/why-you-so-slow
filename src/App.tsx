@@ -5,23 +5,34 @@ import Grid from './styles/Grid';
 
 const App = () => {
   const [players, setPlayers] = useState([false]);
-  const [color, setColor] = useState('lightblue');
+  const [colors, setColors] = useState(['lightblue']);
   const [startTime, setStartTime] = useState(0);
   const [numberOfPlayers, setNumberOfPlayers] = useState(1);
   const [gameStarted, setGameStarted] = useState(false);
 
   useEffect(() => {
+    console.log('event listener added');
+    console.log(numberOfPlayers);
     window.addEventListener('keyup', (e) => checkSpace(e));
+    window.removeEventListener('keyup', (e) => checkSpace(e));
     return () => {
-      window.removeEventListener('keyup', (e) => checkSpace(e));
+      console.log('clean up');
     };
-  }, []);
+  }, [numberOfPlayers]);
 
-  const startGame = () => {
+  useEffect(() => {
+    console.log('number of players set');
+  }, [setNumberOfPlayers]);
+
+  const startGame = (numberOfPlayers: number) => {
+    console.log(numberOfPlayers);
     if (!gameStarted) {
-      setColor('red');
+      // console.log(numberOfPlayers);
+      setAllColors('red');
+      setPlayersReady();
+      // console.log(players);
       setTimeout(function () {
-        setColor('green');
+        setAllColors('green');
         const date = new Date();
         setStartTime(date.getTime());
         setGameStarted(true);
@@ -33,20 +44,43 @@ const App = () => {
   //   return Math.random() * max + 1;
   // };
 
+  const setPlayersReady = () => {
+    let newPlayers = [];
+    let newColors = [];
+    for (let i = 0; i < players.length; i++) {
+      newPlayers[i] = true;
+      newColors[i] = 'lightblue';
+    }
+    // console.log(newPlayers, newColors);
+    setPlayers(newPlayers);
+    setColors(newColors);
+  };
+
+  const setAllColors = (color: string) => {
+    let newColors = [];
+    for (let i = 0; i < players.length; i++) {
+      newColors[i] = color;
+    }
+    setColors(newColors);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPlayers([false]);
     for (let i = 1; i < numberOfPlayers; i++) {
       setPlayers((oldArray) => [...oldArray, false]);
     }
-    console.log(players.length);
   };
 
   const checkSpace = (e: KeyboardEvent) => {
     e.preventDefault();
     if (e.key === ' ') {
-      startGame();
+      startGame(numberOfPlayers);
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNumberOfPlayers(e.target.valueAsNumber);
   };
 
   return (
@@ -58,7 +92,7 @@ const App = () => {
           <input
             type='number'
             value={numberOfPlayers}
-            onChange={(e) => setNumberOfPlayers(e.target.valueAsNumber)}
+            onChange={(e) => handleChange(e)}
           />
         </label>
       </form>
@@ -69,18 +103,20 @@ const App = () => {
             <PlayerBox
               key={index}
               index={index}
-              color={color}
+              colors={colors}
               startTime={startTime}
               players={players}
               gameStarted={gameStarted}
-              setColor={setColor}
+              setColors={setColors}
               setPlayers={setPlayers}
               setGameStarted={setGameStarted}
             ></PlayerBox>
           );
         })}
       </Grid>
-      <MainButton onClick={() => startGame()}>Start (spacebar)</MainButton>
+      <MainButton onClick={() => startGame(numberOfPlayers)}>
+        Start (spacebar)
+      </MainButton>
     </>
   );
 };
