@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MainButton } from './styles/Buttons';
 import PlayerBox from './components/playerBox';
 import Grid from './styles/Grid';
+import NumberOfPlayersSelector from './components/numberOfPlayersSelector';
 
 const App = () => {
   const [players, setPlayers] = useState([false]);
@@ -12,17 +13,9 @@ const App = () => {
 
   useEffect(() => {
     console.log('event listener added');
-    console.log(numberOfPlayers);
-    window.addEventListener('keyup', (e) => checkSpace(e));
-    window.removeEventListener('keyup', (e) => checkSpace(e));
-    return () => {
-      console.log('clean up');
-    };
-  }, [numberOfPlayers]);
-
-  useEffect(() => {
-    console.log('number of players set');
-  }, [setNumberOfPlayers]);
+    document.addEventListener('keydown', (e) => console.log(e.key));
+    return () => document.removeEventListener('keydown', (e) => console.log(e.key));
+  })
 
   const startGame = (numberOfPlayers: number) => {
     console.log(numberOfPlayers);
@@ -86,17 +79,7 @@ const App = () => {
   return (
     <>
       <h1>Reaction Time Test</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Set Number of Players:
-          <input
-            type='number'
-            value={numberOfPlayers}
-            onChange={(e) => handleChange(e)}
-          />
-        </label>
-      </form>
-
+      <NumberOfPlayersSelector handleSubmit={handleSubmit} numberOfPlayers={numberOfPlayers} setNumberOfPlayers={setNumberOfPlayers} handleChange={handleChange} />
       <Grid>
         {players.map((player, index) => {
           return (

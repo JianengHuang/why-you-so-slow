@@ -12,7 +12,7 @@ interface gameInterface {
   setGameStarted: (newGameStarted: boolean) => void;
 }
 
-const PlayerBox = (props: gameInterface) => {
+const PlayerBox = ({index, colors, startTime, players, gameStarted, setColors, setPlayers, setGameStarted}: gameInterface) => {
   const [endTime, setEndTime] = useState(0);
   const [show, setShow] = useState(false);
   const [key, setKey] = useState('');
@@ -22,10 +22,10 @@ const PlayerBox = (props: gameInterface) => {
     return () => {
       window.removeEventListener('keyup', (e) => checkKey(e));
     };
-  }, [props.gameStarted]);
+  }, [gameStarted]);
 
   const checkKey = (e: KeyboardEvent) => {
-    e.preventDefault();
+    // e.preventDefault();
     if (e.key === key) {
       endGame();
     }
@@ -38,32 +38,35 @@ const PlayerBox = (props: gameInterface) => {
   };
 
   const endGame = () => {
-    setColorBlue();
-    const date = new Date();
-    setEndTime(date.getTime() - props.startTime);
-    const newPlayers = props.players;
-    newPlayers[props.index] = false;
-    props.setPlayers(newPlayers);
-    reloadGameState();
+    console.log(startTime, endTime)
+    if (endTime < startTime) {
+      const newEndTime = new Date().getTime();
+      setColorBlue();
+      setEndTime(newEndTime);
+      const newPlayers = players;
+      newPlayers[index] = false;
+      setPlayers(newPlayers);
+      reloadGameState();
+    }
   };
 
   const setColorBlue = () => {
-    let newColors = props.colors;
-    newColors[props.index] = 'lightblue';
-    props.setColors(newColors);
+    let newColors = colors;
+    newColors[index] = 'lightblue';
+    setColors(newColors);
   };
 
   const reloadGameState = () => {
-    if (!props.players.includes(true)) {
-      props.setGameStarted(false);
+    if (!players.includes(true)) {
+      setGameStarted(false);
     }
     // console.log(props.players);
   };
 
   return (
-    <ColoredBox color={props.colors[props.index]}>
-      <h2>Your Key: {key}</h2>
-      <h1>{endTime}</h1>
+    <ColoredBox color={colors[index]}>
+      {/* <h2>Your Key: {key}</h2> */}
+      { endTime > startTime && <h1>{endTime - startTime}</h1>}
       <button onClick={() => setShow(!show)}>Select Key</button>
       {show && (
         <form>
