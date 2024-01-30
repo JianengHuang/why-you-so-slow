@@ -1,33 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { MainButton } from './styles/Buttons';
-import PlayerBox from './components/playerBox';
-import Grid from './styles/Grid';
-import NumberOfPlayersSelector from './components/numberOfPlayersSelector';
+import React, { useEffect, useRef, useState } from "react";
+import { MainButton } from "./styles/Buttons";
+import PlayerBox from "./components/playerBox";
+import Grid from "./styles/Grid";
+import NumberOfPlayersSelector from "./components/numberOfPlayersSelector";
 
 const App = () => {
-  const [players, setPlayers] = useState([false]);
-  const [colors, setColors] = useState(['lightblue']);
-  const [startTime, setStartTime] = useState(0);
+  const startTimeRef = useRef(0);
+  const [players, setPlayers] = useState([true]);
+  const [colors, setColors] = useState(["lightblue"]);
   const [numberOfPlayers, setNumberOfPlayers] = useState(1);
   const [gameStarted, setGameStarted] = useState(false);
+  const gameStartedRef = useRef(gameStarted);
+  const playersRef = useRef(players);
 
   useEffect(() => {
-    console.log('event listener added');
-    document.addEventListener('keydown', (e) => console.log(e.key));
-    return () => document.removeEventListener('keydown', (e) => console.log(e.key));
-  })
+    console.log("event listener added");
+    document.addEventListener("keydown", (e) => waitForSpace(e));
+    return () =>
+      document.removeEventListener("keydown", (e) => console.log(e.key));
+  }, []);
 
-  const startGame = (numberOfPlayers: number) => {
-    console.log(numberOfPlayers);
+  useEffect(() => {
+    gameStartedRef.current = gameStarted;
+  }, [gameStarted]);
+
+  useEffect(() => {
+    console.log("players modified");
+    if (!players.includes(false)) {
+      setGameStarted(false);
+    }
+  }, [players, setPlayers]);
+
+  const waitForSpace = (event: KeyboardEvent) => {
+    if (event.key === " ") {
+      console.log(players, startTimeRef.current);
+      console.log(gameStartedRef);
+      startGame(playersRef.current, gameStartedRef.current);
+    }
+  };
+
+  const startGame = (players: boolean[], gameStarted: boolean) => {
+    console.log(gameStarted, numberOfPlayers);
     if (!gameStarted) {
       // console.log(numberOfPlayers);
-      setAllColors('red');
+      setTimeout(() => {
+        setAllColors("red");
+      }, 0)
       setPlayersReady();
       // console.log(players);
       setTimeout(function () {
-        setAllColors('green');
-        const date = new Date();
-        setStartTime(date.getTime());
+        setAllColors("green");
+        startTimeRef.current = Date.now();
         setGameStarted(true);
       }, 1000);
     }
@@ -42,7 +65,7 @@ const App = () => {
     let newColors = [];
     for (let i = 0; i < players.length; i++) {
       newPlayers[i] = true;
-      newColors[i] = 'lightblue';
+      newColors[i] = "lightblue";
     }
     // console.log(newPlayers, newColors);
     setPlayers(newPlayers);
@@ -59,18 +82,18 @@ const App = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setPlayers([false]);
+    setPlayers([true]);
     for (let i = 1; i < numberOfPlayers; i++) {
-      setPlayers((oldArray) => [...oldArray, false]);
+      setPlayers((oldArray) => [...oldArray, true]);
     }
   };
 
-  const checkSpace = (e: KeyboardEvent) => {
-    e.preventDefault();
-    if (e.key === ' ') {
-      startGame(numberOfPlayers);
-    }
-  };
+  // const checkSpace = (e: KeyboardEvent) => {
+  //   e.preventDefault();
+  //   if (e.key === ' ') {
+  //     startGame(numberOfPlayers);
+  //   }
+  // };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumberOfPlayers(e.target.valueAsNumber);
@@ -79,7 +102,12 @@ const App = () => {
   return (
     <>
       <h1>Reaction Time Test</h1>
-      <NumberOfPlayersSelector handleSubmit={handleSubmit} numberOfPlayers={numberOfPlayers} setNumberOfPlayers={setNumberOfPlayers} handleChange={handleChange} />
+      <NumberOfPlayersSelector
+        handleSubmit={handleSubmit}
+        numberOfPlayers={numberOfPlayers}
+        setNumberOfPlayers={setNumberOfPlayers}
+        handleChange={handleChange}
+      />
       <Grid>
         {players.map((player, index) => {
           return (
@@ -87,7 +115,7 @@ const App = () => {
               key={index}
               index={index}
               colors={colors}
-              startTime={startTime}
+              startTimeRef={startTimeRef}
               players={players}
               gameStarted={gameStarted}
               setColors={setColors}
@@ -97,7 +125,7 @@ const App = () => {
           );
         })}
       </Grid>
-      <MainButton onClick={() => startGame(numberOfPlayers)}>
+      <MainButton onClick={() => startGame(players, gameStarted)}>
         Start (spacebar)
       </MainButton>
     </>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 interface gameInterface {
   index: number;
   colors: string[];
-  startTime: number;
+  startTimeRef: React.MutableRefObject<number>;
   players: Array<boolean>;
   gameStarted: boolean;
   setColors: (newColor: string[]) => void;
@@ -12,7 +12,7 @@ interface gameInterface {
   setGameStarted: (newGameStarted: boolean) => void;
 }
 
-const PlayerBox = ({index, colors, startTime, players, gameStarted, setColors, setPlayers, setGameStarted}: gameInterface) => {
+const PlayerBox = ({index, colors, startTimeRef, players, gameStarted, setColors, setPlayers, setGameStarted}: gameInterface) => {
   const [endTime, setEndTime] = useState(0);
   const [show, setShow] = useState(false);
   const [key, setKey] = useState('');
@@ -38,13 +38,13 @@ const PlayerBox = ({index, colors, startTime, players, gameStarted, setColors, s
   };
 
   const endGame = () => {
-    console.log(startTime, endTime)
-    if (endTime < startTime) {
+    console.log(startTimeRef.current, endTime)
+    if (endTime < startTimeRef.current) {
       const newEndTime = new Date().getTime();
       setColorBlue();
       setEndTime(newEndTime);
       const newPlayers = players;
-      newPlayers[index] = false;
+      newPlayers[index] = true;
       setPlayers(newPlayers);
       reloadGameState();
     }
@@ -66,7 +66,7 @@ const PlayerBox = ({index, colors, startTime, players, gameStarted, setColors, s
   return (
     <ColoredBox color={colors[index]}>
       {/* <h2>Your Key: {key}</h2> */}
-      { endTime > startTime && <h1>{endTime - startTime}</h1>}
+      { endTime > startTimeRef.current && <h1>{endTime - startTimeRef.current}</h1>}
       <button onClick={() => setShow(!show)}>Select Key</button>
       {show && (
         <form>
