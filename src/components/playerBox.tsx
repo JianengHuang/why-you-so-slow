@@ -16,6 +16,7 @@ const PlayerBox = ({index, colors, startTimeRef, players, gameStarted, setColors
   const [endTime, setEndTime] = useState(0);
   const [show, setShow] = useState(false);
   const [key, setKey] = useState('');
+  const [playerTest, setPlayerTest] = useState(false);
 
   useEffect(() => {
     window.addEventListener('keyup', (e) => checkKey(e));
@@ -24,12 +25,21 @@ const PlayerBox = ({index, colors, startTimeRef, players, gameStarted, setColors
     };
   }, [gameStarted]);
 
+  useEffect(() => {
+    console.log(`players: ${players}`);
+  })
+
   const checkKey = (e: KeyboardEvent) => {
     // e.preventDefault();
     if (e.key === key) {
       endGame();
     }
   };
+
+  useEffect(() => {
+    console.log("players changed")
+  }, [players])
+
 
   const submitKey = (e: any) => {
     e.preventDefault();
@@ -47,6 +57,7 @@ const PlayerBox = ({index, colors, startTimeRef, players, gameStarted, setColors
       newPlayers[index] = true;
       setPlayers(newPlayers);
       reloadGameState();
+      setPlayerTest(oldState => !oldState)
     }
   };
 
